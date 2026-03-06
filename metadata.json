@@ -1,0 +1,7 @@
+{
+  "name": "Fleet IQ",
+  "description": "A premium, enterprise-grade multi-tenant marketplace for transportation assets including vehicles, helicopters, yachts, and planes.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

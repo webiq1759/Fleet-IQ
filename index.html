@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="apple-touch-icon" href="/icon-192.png" />
+  <link rel="apple-touch-startup-image" href="/logo.png" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#1e293b" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Primary Meta Tags -->
+  <title>FleetIQ - The Premier Luxury Fleet & Asset Rental Marketplace</title>
+  <meta name="title" content="FleetIQ - The Premier Luxury Fleet & Asset Rental Marketplace" />
+  <meta name="description"
+    content="Rent premium cars, private jets, luxury yachts, and sophisticated helicopters. Verified owners, secure escrow payments, and world-class service." />
+  <meta name="keywords"
+    content="luxury car rental, yacht charter, private jet rental, helicopter hire, exotic car rental, fleet management software" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://fleetiq.cc/" />
+  <meta property="og:title" content="FleetIQ - The Premier Luxury Fleet & Asset Rental Marketplace" />
+  <meta property="og:description"
+    content="Rent premium cars, private jets, luxury yachts, and sophisticated helicopters. Verified owners, secure escrow payments, and world-class service." />
+  <meta property="og:image" content="/logo.png" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://fleetiq.cc/" />
+  <meta property="twitter:title" content="FleetIQ - The Premier Luxury Fleet & Asset Rental Marketplace" />
+  <meta property="twitter:description"
+    content="Rent premium cars, private jets, luxury yachts, and sophisticated helicopters. Verified owners, secure escrow payments, and world-class service." />
+  <meta property="twitter:image" content="/logo.png" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#fff5f5',
+              100: '#fed7d7',
+              500: '#f56565', // Red base
+              600: '#e53e3e',
+              900: '#742a2a',
+            },
+            accent: {
+              500: '#ed8936', // Orange
+            }
+          }
+        }
+      }
+    }
+    // Polyfill process.env for client-side libraries that expect it
+    window.process = {
+      env: {
+        API_KEY: '', // You can insert your key here if you want Support chat to work immediately
+        NODE_ENV: 'production'
+      }
+    };
+  </script>
+  <style>
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Hide scrollbar for horizontal scrolling areas */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Animating Gradient Background for Auth Pages */
+    @keyframes gradientBG {
+      0% {
+        background-position: 0% 50%, center center;
+      }
+
+      50% {
+        background-position: 100% 50%, center center;
+      }
+
+      100% {
+        background-position: 0% 50%, center center;
+      }
+    }
+
+    .auth-gradient-bg {
+      background:
+        linear-gradient(-45deg, rgba(15, 23, 42, 0.9), rgba(0, 0, 0, 0.85), rgba(69, 10, 10, 0.85), rgba(15, 23, 42, 0.9)),
+        url('/auth-car-bg.png');
+      background-size: 400% 400%, cover;
+      background-position: 0% 50%, center center;
+      background-repeat: no-repeat, no-repeat;
+      background-blend-mode: overlay;
+      animation: gradientBG 15s ease infinite;
+    }
+
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .glass-input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .glass-input:focus {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(239, 68, 68, 0.5);
+      /* Brand red */
+      outline: none;
+    }
+  </style>
+
+  <link rel="stylesheet" href="/index.css">
+</head>
+
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50 transition-colors duration-200">
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        for (let registration of registrations) {
+          console.log('Unregistering SW:', registration);
+          registration.unregister();
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>
