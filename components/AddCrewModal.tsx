@@ -159,10 +159,12 @@ export const AddCrewModal: React.FC<AddCrewModalProps> = ({ isOpen, onClose, onA
             // Sanitize status to only valid enum values
             let safeStatus = initialData ? initialData.status : 'Pending';
             const validStatuses = ['Pending', 'Active', 'Rejected', 'Busy', 'On Leave'];
-            if (safeStatus === 'Approved') safeStatus = 'Active';
-            if (!validStatuses.includes(safeStatus as string)) safeStatus = 'Active';
 
-            // 3. Prepare Payload
+            // Map common invalid values or legacy 'Approved' directly to 'Active'
+            if (safeStatus === 'Approved') safeStatus = 'Active';
+            if (!validStatuses.includes(safeStatus as string)) safeStatus = 'Pending';
+
+
             const crewPayload = {
                 owner_id: user.id,
                 name: `${formData.firstName} ${formData.lastName}`,
@@ -175,11 +177,13 @@ export const AddCrewModal: React.FC<AddCrewModalProps> = ({ isOpen, onClose, onA
                 license_type: formData.licenseType || getLicenseLabel(formData.assetType),
                 years_experience: Number(formData.yearsExperience) || 0,
                 expiry_date: formData.expiryDate || null,
-                status: safeStatus,
+                status: safeStatus === 'Approved' ? 'Active' : safeStatus,
                 avatar_url: avatarUrl,
                 assigned_asset_ids: formData.assignedAssetIds,
                 documents: documents
             };
+
+            console.log("Submitting Complete Crew Payload:", crewPayload);
 
             let resultData;
 
