@@ -98,6 +98,21 @@ export default function App() {
       }
     };
     checkRole();
+
+    // Track last_active_at on sign in and token refresh
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
+        supabase
+          .from('profiles')
+          .update({ last_active_at: new Date().toISOString() })
+          .eq('id', session.user.id)
+          .then(({ error }) => {
+            if (error) console.error('Failed to update last_active_at:', error.message);
+          });
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   // Prevent rendering incorrect view while checking role
