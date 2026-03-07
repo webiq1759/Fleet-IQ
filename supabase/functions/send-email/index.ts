@@ -443,6 +443,70 @@ serve(async (req) => {
                 `);
         break;
 
+      case 'kyc_approved':
+        subject = `✅ Identity Verified — Welcome to Fleet IQ`;
+        html = wrapper(`
+                  <div class="h1">You're Verified! 🎉</div>
+                  <div class="p">Hi ${data.ownerName},</div>
+                  <div class="p">Great news! Our team has successfully reviewed your submitted documents and your Fleet IQ account has been <strong>fully verified</strong>.</div>
+
+                  <div class="p" style="padding: 18px; border-left: 4px solid #10b981; background-color: #d1fae5; color: #047857; border-radius: 8px; margin: 24px 0;">
+                    <strong>You now have full access to the Fleet IQ platform.</strong><br><br>
+                    You can start listing your assets on the marketplace, managing your crew, tracking live bookings, and receiving payments — all from your dashboard.
+                  </div>
+
+                  <table class="details-card" width="100%" cellpadding="0" cellspacing="0">
+                    <tr><td colspan="2" style="background:#10b981; color:white; padding: 10px; font-weight:bold; border-radius: 6px 6px 0 0; text-align: center;">ACCOUNT STATUS</td></tr>
+                    <tr class="detail-row"><td class="label">Account</td> <td class="value">${data.email}</td></tr>
+                    <tr class="detail-row"><td class="label">Status</td> <td class="value" style="color: #10b981; font-size: 16px;">✅ Verified</td></tr>
+                    <tr class="detail-row"><td class="label">Verified On</td> <td class="value">${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</td></tr>
+                  </table>
+
+                  <div style="text-align: center; margin-top: 24px;">
+                    <a href="https://fleetiq.cc" class="btn" style="background: linear-gradient(90deg, #10b981 0%, #059669 100%);">Go to My Dashboard</a>
+                  </div>
+
+                  <div class="p" style="font-size: 13px; color: #94a3b8; text-align: center; margin-top: 24px;">
+                    Questions? Reach us at <a href="mailto:support@fleetiq.cc" style="color: #e11d48;">support@fleetiq.cc</a>
+                  </div>
+                `);
+        break;
+
+      case 'kyc_rejected':
+        subject = `Action Required: Verification Unsuccessful`;
+        html = wrapper(`
+                  <div class="h1">Verification Unsuccessful 🛑</div>
+                  <div class="p">Hi ${data.ownerName},</div>
+                  <div class="p">We have reviewed the documents you submitted for identity verification on Fleet IQ. Unfortunately, we were unable to verify your account at this time.</div>
+
+                  <div class="p" style="padding: 18px; border-left: 4px solid #e11d48; background-color: #ffe4e6; color: #9f1239; border-radius: 8px; margin: 24px 0;">
+                    <strong>Reason for rejection:</strong><br><br>
+                    ${data.rejectionNote || 'Your document could not be verified. This may be due to image quality, expired documents, or a mismatch in information.'}
+                  </div>
+
+                  <div class="p"><strong>What to do next:</strong></div>
+                  <div class="p" style="font-size: 15px; color: #475569;">
+                    1. Review the reason above carefully.<br>
+                    2. Prepare a clear, valid, unexpired government-issued ID or business document.<br>
+                    3. Contact our support team to resubmit your documents.
+                  </div>
+
+                  <table class="details-card" width="100%" cellpadding="0" cellspacing="0">
+                    <tr><td colspan="2" style="background:#0f172a; color:white; padding: 10px; font-weight:bold; border-radius: 6px 6px 0 0; text-align: center;">ACCOUNT STATUS</td></tr>
+                    <tr class="detail-row"><td class="label">Account</td> <td class="value">${data.email}</td></tr>
+                    <tr class="detail-row"><td class="label">Status</td> <td class="value" style="color: #e11d48;">❌ Rejected</td></tr>
+                  </table>
+
+                  <div style="text-align: center; margin-top: 24px;">
+                    <a href="mailto:support@fleetiq.cc?subject=KYC Resubmission Request&body=Hi Fleet IQ Team, I would like to resubmit my KYC documents. My email is: ${data.email}" class="btn">Contact Support to Resubmit</a>
+                  </div>
+
+                  <div class="p" style="font-size: 13px; color: #94a3b8; text-align: center; margin-top: 24px;">
+                    We are here to help. Reply to this email or write to <a href="mailto:support@fleetiq.cc" style="color: #e11d48;">support@fleetiq.cc</a>
+                  </div>
+                `);
+        break;
+
       default:
         html = wrapper(`<div class="p">${data.message}</div>`);
     }
