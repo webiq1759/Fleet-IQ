@@ -111,7 +111,29 @@ export const ListerOnboarding = () => {
                 const { data: { user } } = await supabase.auth.getUser();
 
                 if (user) {
-                    // Update profile role to LISTER in DB
+                    // 1. Upload KYC document to Supabase Storage
+                    const kycFile = formData.accountType === 'COMPANY'
+                        ? formData.documents.businessRegistration
+                        : formData.documents.identityCard;
+
+                    let kycDocUrl: string | null = null;
+
+                    if (kycFile) {
+                        const cleanName = kycFile.name.replace(/[^a-zA-Z0-9.]/g, '_');
+                        const kycPath = `${user.id}/${Date.now()}_${cleanName}`;
+                        const { error: uploadError } = await supabase.storage
+                            .from('kyc-documents')
+                            .upload(kycPath, kycFile, { upsert: true });
+
+                        if (uploadError) throw new Error(`Document upload failed: ${uploadError.message}`);
+
+                        const { data: { publicUrl } } = supabase.storage
+                            .from('kyc-documents')
+                            .getPublicUrl(kycPath);
+                        kycDocUrl = publicUrl;
+                    }
+
+                    // 2. Update profile: LISTER role + kyc_status pending (not auto-verified)
                     const { error } = await supabase
                         .from('profiles')
                         .update({
@@ -124,7 +146,9 @@ export const ListerOnboarding = () => {
                             country: formData.address.country,
                             state: formData.address.state,
                             location: `${formData.address.street}, ${formData.address.city}, ${formData.address.state}, ${formData.address.country}`,
-                            is_verified: true // Auto-verify for demo
+                            kyc_status: 'pending',
+                            kyc_submitted_at: new Date().toISOString(),
+                            kyc_doc_url: kycDocUrl
                         })
                         .eq('id', user.id);
 
@@ -536,8 +560,8 @@ export const ListerOnboarding = () => {
             <NotificationModal
                 isOpen={isSuccessModalOpen}
                 onClose={() => { setIsSuccessModalOpen(false); window.location.href = '/'; }}
-                title="Application Submitted!"
-                message="You are now a registered Fleet Lister. Access your dashboard to manage assets."
+                title="Application Submitted! 🎉"
+                message="Your application is under review. Our team will verify your documents within 1–5 hours. You can access your dashboard now — a status banner will keep you updated."
             />
         </div>
     );

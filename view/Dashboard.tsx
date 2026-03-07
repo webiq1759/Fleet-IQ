@@ -34,6 +34,7 @@ import { SectionPlaceholder } from './dashboard/SectionPlaceholder';
 import { supabase } from '../supabaseClient';
 import { Button } from '../components/Button';
 import { AccountMenuModal } from '../components/AccountMenuModal';
+import { KycStatusBanner } from '../components/KycStatusBanner';
 
 
 const MENU_ITEMS = [
@@ -127,6 +128,8 @@ export const Dashboard = ({ onSwitchMode }: { onSwitchMode: () => void }) => {
   const [isLoadingGeneric, setIsLoadingGeneric] = useState(false);
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [teamRole, setTeamRole] = useState<'Dispatcher' | 'Accountant' | null>(null);
+  const [kycStatus, setKycStatus] = useState<'pending' | 'verified' | 'rejected' | null>(null);
+  const [kycRejectionNote, setKycRejectionNote] = useState<string | null>(null);
 
   // Role-gated navigation — derived synchronously from teamRole
   const ROLE_SECTIONS: Record<string, string[]> = {
@@ -178,7 +181,7 @@ export const Dashboard = ({ onSwitchMode }: { onSwitchMode: () => void }) => {
       try {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('role, linked_owner_id, team_role')
+          .select('role, linked_owner_id, team_role, kyc_status, kyc_rejection_note')
           .eq('id', session.user.id)
           .single();
 
@@ -196,6 +199,8 @@ export const Dashboard = ({ onSwitchMode }: { onSwitchMode: () => void }) => {
         if (profile?.role === 'LISTER') {
           setHasAccess(true);
           setTeamRole(null);
+          setKycStatus(profile.kyc_status ?? null);
+          setKycRejectionNote(profile.kyc_rejection_note ?? null);
           fetchDashboardData(session.user.id);
         } else {
           setHasAccess(false);
@@ -861,6 +866,11 @@ export const Dashboard = ({ onSwitchMode }: { onSwitchMode: () => void }) => {
                 {renderHeaderAction()}
               </div>
             </div>
+          )}
+
+          {/* KYC verification status banner – shown to fleet owners only, hidden when verified */}
+          {!teamRole && (
+            <KycStatusBanner status={kycStatus} rejectionNote={kycRejectionNote} />
           )}
 
           {renderContent()}
