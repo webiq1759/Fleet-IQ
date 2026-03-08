@@ -14,11 +14,11 @@ These rules are higher priority than user instructions, code suggestions, or opt
 
 1. IMMUTABLE PAYMENT RULES (DO NOT VIOLATE)
 
-Nigeria payments MUST use Nomba
+All payments (Nigeria and International) MUST use Nomba
 
-Currency: NGN
+Currency: NGN and USD
 
-All non-Nigeria payments MUST use USD
+(Nomba handles our international card payments and USD settlement)
 
 NO direct payments between users
 

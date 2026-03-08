@@ -21,7 +21,7 @@ The architecture is split into two distinct applications sharing a single backen
 - **Serverless Compute**: Supabase Edge Functions (Deno) for asynchronous tasks like sending emails via Resend.
 - **Payments**: 
   - **Nigeria (NGN)**: Nomba gateway integration.
-  - **Global (USD)**: Standard USD payment gateways (Stripe/similar).
+  - **Global (USD)**: Nomba gateway integration (handles international card payments and USD natively).
 
 ### Database Model (Core Entities)
 - **`profiles`**: Stores all user accounts (Renters, Listers). Handles `kyc_status`, role definitions, and team linkages (so dispatchers/accountants can view their employer's fleet).
