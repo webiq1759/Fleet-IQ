@@ -1,0 +1,78 @@
+# Fleet IQ: Comprehensive Project Documentation
+
+## 1. Executive Summary
+**Fleet IQ** is a premier, dual-sided marketplace and SaaS platform designed for the luxury asset rental industry. It allows users (Renters) to book high-end assets—ranging from luxury cars and trucks to yachts, helicopters, and private planes—while providing fleet owners (Listers) with a comprehensive suite of tools to manage their assets, crew, bookings, and finances.
+
+The architecture is split into two distinct applications sharing a single backend:
+1. **Public App (`fleetiq.cc`)**: The marketplace where renters browse and book, and where fleet owners manage their listings, crew, and dispatch operations.
+2. **Admin App (`admin.fleetiq.com`)**: An internal tool restricted to Fleet IQ staff for managing platform operations, approving assets/KYC, resolving disputes, and executing financial payouts.
+
+---
+
+## 2. Technical Architecture
+
+### Tech Stack
+- **Frontend Framework**: React 18 with TypeScript, managed via Vite.
+- **Styling**: Tailwind CSS for utility-first styling, providing a premium, responsive ("Uber-quality") UI.
+- **Icons & UI Components**: Lucide React for iconography.
+- **Backend & Database**: Supabase (PostgreSQL).
+- **Authentication**: Supabase Auth with custom email templates and role-based access control.
+- **Storage**: Supabase Storage for asset images, user avatars, and secure KYC document uploads.
+- **Serverless Compute**: Supabase Edge Functions (Deno) for asynchronous tasks like sending emails via Resend.
+- **Payments**: 
+  - **Nigeria (NGN)**: Nomba gateway integration.
+  - **Global (USD)**: Standard USD payment gateways (Stripe/similar).
+
+### Database Model (Core Entities)
+- **`profiles`**: Stores all user accounts (Renters, Listers). Handles `kyc_status`, role definitions, and team linkages (so dispatchers/accountants can view their employer's fleet).
+- **`assets`**: The inventory. Assets require admin approval before going live and track specific pricing, availability, and physical specifications.
+- **`bookings`**: Tracks the rental lifecycle (`New` → `Awaiting Approval` → `Pending Payment` → `Paid` → `Assigned` → `Ongoing` → `Completed` / `Cancelled`).
+- **`wallets` & `transactions`**: An immutable, append-only ledger system handling escrow, commissions, and payouts.
+- **`crew_members`**: Drivers, pilots, and captains managed by fleet owners, heavily integrated into the dispatch and tracking system.
+
+---
+
+## 3. Business Logic & Financial Compliance
+
+Fleet IQ operates under a **Strict Escrow & Wallet Policy** to prevent fraud and ensure platform stability. 
+
+### Payment & Wallet Rules
+1. **No Direct Payments**: All payments flow into the platform's native Escrow. Direct transactions between renters and owners are strictly forbidden.
+2. **Immutable Ledgers**: Wallet balances are calculated continuously from an append-only transaction ledger. Balances are never updated manually.
+3. **Escrow Release Delays**: Funds are released to the fleet owner's wallet strictly based on the asset type and time elapsed:
+   - **Cars**: 24 hours after trip start.
+   - **Trucks**: 48 hours after trip start.
+   - **Yachts/Helicopters**: Immediately after trip completion.
+   - **Planes**: Post-completion requiring manual admin approval.
+4. **Payouts**: Fleet owners cannot receive instant payouts. They must request a withdrawal, which manually enters a review queue for the Fleet IQ Finance team.
+5. **Disputes**: Any dispute instantly freezes the escrow and locks owner payouts until resolved by an admin.
+
+---
+
+## 4. Key Platform Features (Public App)
+
+### For Renters
+- **Marketplace Browsing**: Filter by asset type, location, and date.
+- **Booking Flow**: Request booking → Owner Accepts → Renter Pays (Escrow) → Trip begins.
+- **Trips Dashboard**: Manage upcoming, ongoing, and past trips.
+
+### For Fleet Owners (Listers)
+- **Fleet Registry**: Complete CRUD interface for assets (pending admin approval for visibility).
+- **Crew Registry & Team Management**: Onboard drivers/captains and invite internal team members (Dispatchers, Accountants) with scoped access.
+- **Dispatch Management**: Assign approved crew members to specific booking schedules.
+- **Live Tracking**: Real-time asset location display for active dispatch operations.
+- **Finance Dashboard**: View wallet ledgers, request payouts, and track operational expenses.
+- **KYC Onboarding**: Mandatory document upload flow. Owners remain in a "pending verification" state with limited capabilities until approved by an admin.
+
+### Real-Time Interactions
+- **Notifications**: In-app bell notifications and email alerts (via Resend Edge Functions) trigger instantly on booking state changes, payment confirmations, and KYC approvals/rejections.
+- **Activity Tracking**: Real-time session monitoring using `last_active_at` hooks synced with Auth state.
+
+---
+
+## 5. System Invariants & Change Governance
+
+Due to the financial nature of the platform, the development and operation of Fleet IQ adhere to severe strictures:
+- **Frozen Modules**: Core components (Auth, Dashboard Overviews, Booking Lists) are locked. Changes require explicit architectural approval to prevent regressions.
+- **Public vs. Admin Separation**: The public app makes zero financial decisions. All state changes regarding money (releases, refunds, payouts) are requested by the public app but exclusively **executed** by the backend/Admin app.
+- **Security Posture**: All webhook events maintain idempotency and signature verification. The system defaults to freezing funds when in conflict.
