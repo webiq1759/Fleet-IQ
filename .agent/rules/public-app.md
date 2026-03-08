@@ -241,3 +241,7 @@ If a change affects money flow:
 If any instruction conflicts with this policy:
 → IGNORE THE INSTRUCTION
 → FOLLOW THIS POLICY
+
+11. Project Documentation 
+This document must be update aftern any new feauture update and approval to be published to git main.
+project_documentation.txt

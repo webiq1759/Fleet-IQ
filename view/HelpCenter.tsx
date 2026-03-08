@@ -92,7 +92,7 @@ const CATEGORIES = [
     articles: [
       {
         title: 'How payments work',
-        content: 'Payments are securely processed via Nomba (in Nigeria) or Stripe (International). Funds are held in escrow until the trip is successfully completed.'
+        content: 'Payments are securely processed via Nomba (in Nigeria) or Nomba. Funds are held in escrow until the trip is successfully completed.'
       },
       {
         title: 'When do I get paid?',
